@@ -19,7 +19,7 @@ abstract class ServiceCommand extends BotCommand {
         try {
             absSender.execute(message);
         } catch (TelegramApiException exception) {
-            System.out.println(exception);
+            System.out.println(exception.getMessage());
         }
     }
 }

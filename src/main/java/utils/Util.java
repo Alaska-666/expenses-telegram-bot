@@ -2,6 +2,7 @@ package utils;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -29,7 +30,15 @@ public class Util {
         }
     }
 
-    public static SendMessage sendInlineKeyBoardMessage(Long chatId) {
+    public static Long getChatID(Update update) {
+        if (update.getMessage() == null) {
+            return update.getCallbackQuery().getMessage().getChatId();
+        } else {
+            return update.getMessage().getChatId();
+        }
+    }
+
+    public static SendMessage sendInlineKeyBoardMessage(Long chatId, List<String> categories) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();

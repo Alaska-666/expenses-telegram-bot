@@ -6,35 +6,39 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import states.State;
-import states.StateReadExpenseName;
+import states.ReadExpenseNameState;
 import utils.Util;
 
+import java.util.List;
 import java.util.Map;
 
 
 public class AddExpenseCommand extends ServiceCommand {
     private final Map<Long, State> states;
     private final ExpenseBuilder expenseBuilder;
+    private final List<String> expenseCategories;
 
-    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder) {
+    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder, List<String> expenseCategories) {
         super(identifier, description);
         this.states = states;
         this.expenseBuilder = expenseBuilder;
+        this.expenseCategories = expenseCategories;
     }
 
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
+        states.clear();
         String userName = (user.getUserName() != null) ? user.getUserName() :
                 String.format("%s %s", user.getLastName(), user.getFirstName());
 
         String answer = "Введите название траты:";
         sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, answer);
         try {
-            absSender.execute(Util.sendInlineKeyBoardMessage(chat.getId()));
+            absSender.execute(Util.sendInlineKeyBoardMessage(chat.getId(), expenseCategories));
         } catch (TelegramApiException e) {
             System.out.println(e.getMessage());
         }
-        states.put(chat.getId(), new StateReadExpenseName(expenseBuilder));
+        states.put(chat.getId(), new ReadExpenseNameState(expenseBuilder));
     }
 }

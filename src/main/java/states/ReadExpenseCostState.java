@@ -5,10 +5,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import utils.Util;
 
-class StateReadExpenseCost implements State {
+class ReadExpenseCostState implements State {
     private final ExpenseBuilder expenseBuilder;
 
-    public StateReadExpenseCost(ExpenseBuilder expenseBuilder) {
+    public ReadExpenseCostState(ExpenseBuilder expenseBuilder) {
         this.expenseBuilder = expenseBuilder;
     }
 
@@ -17,6 +17,6 @@ class StateReadExpenseCost implements State {
         Integer cost = Integer.parseInt(update.getMessage().getText());
         expenseBuilder.setCost(cost);
         Util.setAnswer(sender, update.getMessage().getChatId(), "Введите, кто заплатил");
-        return new StateReadExpensePayer(expenseBuilder);
+        return new ReadExpensePayerState(expenseBuilder);
     }
 }

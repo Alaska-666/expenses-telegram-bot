@@ -1,17 +1,14 @@
 package states;
 
 import expense.ExpenseBuilder;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import utils.Util;
 
-public class StateReadExpenseName implements State {
+public class ReadExpenseNameState implements State {
     private final ExpenseBuilder expenseBuilder;
 
-    public StateReadExpenseName(ExpenseBuilder expenseBuilder) {
+    public ReadExpenseNameState(ExpenseBuilder expenseBuilder) {
         this.expenseBuilder = expenseBuilder;
     }
 
@@ -23,9 +20,8 @@ public class StateReadExpenseName implements State {
         } else {
             expenseName = update.getMessage().getText();
         }
-        System.out.println(expenseName);
         expenseBuilder.setName(expenseName);
         Util.setAnswer(sender, update.getMessage().getChatId(), "Введите, сколько Вы потратили");
-        return new StateReadExpenseCost(expenseBuilder);
+        return new ReadExpenseCostState(expenseBuilder);
     }
 }

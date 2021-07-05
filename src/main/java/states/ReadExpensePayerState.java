@@ -5,10 +5,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import utils.Util;
 
-public class StateReadExpensePayer implements State{
+public class ReadExpensePayerState implements State{
     private final ExpenseBuilder expenseBuilder;
 
-    public StateReadExpensePayer(ExpenseBuilder expenseBuilder) {
+    public ReadExpensePayerState(ExpenseBuilder expenseBuilder) {
         this.expenseBuilder = expenseBuilder;
     }
 

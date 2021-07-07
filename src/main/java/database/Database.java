@@ -1,9 +1,7 @@
 package database;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Database {
     private final String databaseConnectionUrl;
@@ -58,19 +56,21 @@ public class Database {
     public void createExpenseCategoriesTable() {
         String sql = "CREATE TABLE IF NOT EXISTS expense_categories (\n"
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
-                + " category text NOT NULL\n" +
-                ");";
+                + " category text NOT NULL,\n"
+                + " username text NOT NULL\n"
+                + ");";
         createTable(sql);
     }
 
-    public void addExpenseCategory(String category) {
-        String sql = "INSERT INTO expense_categories(category) VALUES(?)";
+    public void addExpenseCategory(String category, String username) {
+        String sql = "INSERT INTO expense_categories(category, username) VALUES(?,?)";
         Connection conn = getConn();
         if (conn == null) {
             return;
         }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, category);
+            pstmt.setString(2, username);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -78,17 +78,25 @@ public class Database {
         closeConnection(conn);
     }
 
-    public List<String> readExpenseCategories() {
-        String sql = "SELECT category FROM expense_categories";
+    public Map<String, List<String>> readExpenseCategories() {
+        String sql = "SELECT category, username FROM expense_categories";
         Connection conn = getConn();
         if (conn == null) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        List<String> categories = new ArrayList<>();
+        Map<String, List<String>> categories = new HashMap<>();
         try (Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             while (rs.next()) {
-                categories.add(rs.getString("category"));
+                String username = rs.getString("username");
+                String category = rs.getString("category");
+                if (categories.containsKey(username)) {
+                    categories.get(username).add(category);
+                } else {
+                    List<String> values = new ArrayList<>();
+                    values.add(category);
+                    categories.put(username, values);
+                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

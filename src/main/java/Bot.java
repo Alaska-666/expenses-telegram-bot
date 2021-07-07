@@ -20,7 +20,7 @@ public class Bot extends TelegramLongPollingCommandBot {
     private final Database database;
     private final Map<Long,State> states = new HashMap<>();
     private final ExpenseBuilder expenseBuilder = new ExpenseBuilder();
-    private final List<String> expenseCategories;
+    private final Map<String, List<String>> expenseCategories;
 
     public Bot(String botName, String botToken) {
         super();
@@ -30,6 +30,7 @@ public class Bot extends TelegramLongPollingCommandBot {
         database.createExpenseCategoriesTable();
         database.createExpensesTable();
         expenseCategories = database.readExpenseCategories();
+        System.out.println(expenseCategories);
 
         //регистрируем команды
         register(new StartCommand("start", "Старт"));

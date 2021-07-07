@@ -16,9 +16,9 @@ import java.util.Map;
 public class AddExpenseCommand extends ServiceCommand {
     private final Map<Long, State> states;
     private final ExpenseBuilder expenseBuilder;
-    private final List<String> expenseCategories;
+    private final Map<String, List<String>> expenseCategories;
 
-    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder, List<String> expenseCategories) {
+    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder, Map<String, List<String>> expenseCategories) {
         super(identifier, description);
         this.states = states;
         this.expenseBuilder = expenseBuilder;
@@ -32,10 +32,9 @@ public class AddExpenseCommand extends ServiceCommand {
         String userName = (user.getUserName() != null) ? user.getUserName() :
                 String.format("%s %s", user.getLastName(), user.getFirstName());
 
-        String answer = "Введите название траты:";
-        sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, answer);
+        String message = "Введите название траты:";
         try {
-            absSender.execute(Util.sendInlineKeyBoardMessage(chat.getId(), expenseCategories));
+            absSender.execute(Util.sendInlineKeyBoardMessage(chat.getId(), message, expenseCategories.get(userName)));
         } catch (TelegramApiException e) {
             System.out.println(e.getMessage());
         }

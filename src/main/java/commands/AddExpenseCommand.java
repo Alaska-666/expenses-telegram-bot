@@ -1,5 +1,6 @@
 package commands;
 
+import database.Database;
 import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -17,12 +18,14 @@ public class AddExpenseCommand extends ServiceCommand {
     private final Map<Long, State> states;
     private final ExpenseBuilder expenseBuilder;
     private final Map<String, List<String>> expenseCategories;
+    private final Database database;
 
-    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder, Map<String, List<String>> expenseCategories) {
+    public AddExpenseCommand(String identifier, String description, Map<Long, State> states, ExpenseBuilder expenseBuilder, Map<String, List<String>> expenseCategories, Database database) {
         super(identifier, description);
         this.states = states;
         this.expenseBuilder = expenseBuilder;
         this.expenseCategories = expenseCategories;
+        this.database = database;
     }
 
 
@@ -38,6 +41,6 @@ public class AddExpenseCommand extends ServiceCommand {
         } catch (TelegramApiException e) {
             System.out.println(e.getMessage());
         }
-        states.put(chat.getId(), new ReadExpenseNameState(expenseBuilder));
+        states.put(chat.getId(), new ReadExpenseNameState(expenseBuilder, database));
     }
 }

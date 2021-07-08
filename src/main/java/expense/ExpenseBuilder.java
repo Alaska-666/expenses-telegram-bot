@@ -2,10 +2,13 @@ package expense;
 
 import expense.Expense;
 
+import java.util.List;
+
 public class ExpenseBuilder {
     private String name;
     private String payer;
     private Integer cost;
+    private List<String> people;
 
     public ExpenseBuilder() {}
 
@@ -23,5 +26,9 @@ public class ExpenseBuilder {
 
     public void setCost(Integer cost) {
         this.cost = cost;
+    }
+
+    public void setPeople(List<String> people) {
+        this.people = people;
     }
 }

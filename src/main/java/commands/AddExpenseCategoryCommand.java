@@ -37,8 +37,6 @@ public class AddExpenseCategoryCommand extends ServiceCommand {
             states.put(chat.getId(), new ReadExpenseCategoryState(database, expenseCategories));
         } else {
             String category = String.join(" ", strings);
-            System.out.println(category);
-            System.out.println(expenseCategories.get(userName));
             if (expenseCategories.containsKey(userName) && expenseCategories.get(userName).contains(category)) {
                 sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, "Категория уже существует");
             } else {

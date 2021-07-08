@@ -45,9 +45,9 @@ public class Database {
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + " date text NOT NULL,\n"
                 + "	name text NOT NULL,\n"
-                + " people text NOT NULL,\n"
                 + "	cost real NOT NULL,\n"
                 + " payer text NOT NULL,\n"
+                + " people text NOT NULL,\n"
                 + " status text  NOT NULL\n"
                 + ");";
         createTable(sql);
@@ -61,6 +61,48 @@ public class Database {
                 + ");";
         createTable(sql);
     }
+
+    public void createUsersTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS users (\n"
+                + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + " username text NOT NULL\n"
+                + ");";
+        createTable(sql);
+    }
+
+    public void addUser(String username) {
+        String sql = "INSERT INTO users(username) VALUES(?)";
+        Connection conn = getConn();
+        if (conn == null) {
+            return;
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        closeConnection(conn);
+    }
+
+    public List<String> readUsers() {
+        String sql = "SELECT username FROM users";
+        Connection conn = getConn();
+        if (conn == null) {
+            return Collections.emptyList();
+        }
+        List<String> users = new ArrayList<>();
+        try (Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                users.add(rs.getString("username"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return users;
+    }
+
 
     public void addExpenseCategory(String category, String username) {
         String sql = "INSERT INTO expense_categories(category, username) VALUES(?,?)";

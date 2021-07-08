@@ -9,7 +9,6 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.helpCommand
 import org.telegram.telegrambots.meta.api.objects.Update;
 import utils.Util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,15 @@ public class Bot extends TelegramLongPollingCommandBot {
         database = new Database("jdbc:sqlite:db/expense.db");
         database.createExpenseCategoriesTable();
         database.createExpensesTable();
+        database.createUsersTable();
         expenseCategories = database.readExpenseCategories();
         System.out.println(expenseCategories);
+        System.out.println(database.readUsers());
 
         //регистрируем команды
-        register(new StartCommand("start", "Старт"));
+        register(new StartCommand("start", "Старт", database));
         register(new HelpCommand());
-        register(new AddExpenseCommand("add_expense", "Добавить трату", states, expenseBuilder, expenseCategories));
+        register(new AddExpenseCommand("add_expense", "Добавить трату", states, expenseBuilder, expenseCategories, database));
         register(new AddExpenseCategoryCommand("add_expense_category", "Добавить категорию расходов", states, database, expenseCategories));
     }
 

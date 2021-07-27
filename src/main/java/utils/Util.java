@@ -2,6 +2,7 @@ package utils;
 
 import database.Database;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -60,6 +61,25 @@ public class Util {
     }
 
     public static SendMessage sendInlineKeyBoardMessage(Long chatId, String textMessage, List<String> categories) {
+        InlineKeyboardMarkup markup = createInlineKeyBoardMarkup(categories);
+        SendMessage message = new SendMessage();
+        message.setText(textMessage);
+        message.setChatId(chatId.toString());
+        message.setReplyMarkup(markup);
+        return message;
+    }
+
+    public static EditMessageText editMessage(Long chatId, Integer messageId, String textMessage, List<String> categories) {
+        InlineKeyboardMarkup markup = createInlineKeyBoardMarkup(categories);
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(chatId.toString());
+        editMessage.setMessageId(messageId);
+        editMessage.setText(textMessage);
+        editMessage.setReplyMarkup(markup);
+        return editMessage;
+    }
+
+    private static InlineKeyboardMarkup createInlineKeyBoardMarkup(List<String> categories) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         for(int i = 1; i < categories.size(); i+=2) {
@@ -71,10 +91,6 @@ public class Util {
             addButtonsInKeyboardButtonsRow(rowList, Collections.singletonList(categories.get(categories.size() - 1)));
         }
         inlineKeyboardMarkup.setKeyboard(rowList);
-        SendMessage message = new SendMessage();
-        message.setText(textMessage);
-        message.setChatId(chatId.toString());
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
+        return inlineKeyboardMarkup;
     }
 }

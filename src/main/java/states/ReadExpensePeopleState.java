@@ -5,46 +5,46 @@ import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReadExpensePeopleState implements State {
     private final ExpenseBuilder expenseBuilder;
     private final Database database;
-    private List<String> selectedUsers;
+    private List<String> users;
+    private final String SELECTED_SYMBOL = "*";
 
-    public ReadExpensePeopleState(ExpenseBuilder expenseBuilder, Database database, List<String> selectedUsers) {
+    public ReadExpensePeopleState(ExpenseBuilder expenseBuilder, Database database, List<String> users) {
         this.expenseBuilder = expenseBuilder;
         this.database = database;
-        this.selectedUsers = selectedUsers;
+        this.users = users;
+    }
+
+    private String stringWithoutLastChar(String str) {
+        return new StringBuffer(str).deleteCharAt(str.length() - 1).toString();
     }
 
     @Override
     public State getNextState(Update update, AbsSender sender) {
         if (update.hasCallbackQuery()) {
             String call_data = update.getCallbackQuery().getData();
-            System.out.println(call_data);
             if (call_data.equals("ДОБАВИТЬ")) {
-                expenseBuilder.setPeople(this.selectedUsers);
+                expenseBuilder.setPeople(
+                        this.users.stream()
+                                .filter(s -> s.endsWith(SELECTED_SYMBOL))
+                                .map(this::stringWithoutLastChar)
+                                .collect(Collectors.toList())
+                );
                 return new AddToDatabaseState(expenseBuilder, database);
             } else if (call_data.equals("СБРОСИТЬ")) {
-                selectedUsers = new ArrayList<>();
+                users = database.readUsers();
+            } else {
+                String newUser = call_data.endsWith(SELECTED_SYMBOL) ? stringWithoutLastChar(call_data): call_data.concat(SELECTED_SYMBOL);
+                users.set(users.indexOf(call_data), newUser);
             }
-            // TODO edit message
-
-            return new ReadExpensePeopleState(expenseBuilder, database, selectedUsers);
-//                String answer = "Updated message text";
-//                EditMessageText new_message = new EditMessageText()
-//                        .setChatId(chat_id)
-//                        .setMessageId(toIntExact(message_id))
-//                        .setText(answer);
-//                try {
-//                    execute(new_message);
-//                } catch (TelegramApiException e) {
-//                    e.printStackTrace();
-//                }
+            return ReadPeopleStatePreprocessing.execute(update, sender, database, expenseBuilder, users, true);
         } else {
-            return ReadPeopleStatePreprocessing.execute(update, sender, database, expenseBuilder, selectedUsers);
+            return ReadPeopleStatePreprocessing.execute(update, sender, database, expenseBuilder, users, false);
         }
     }
 }

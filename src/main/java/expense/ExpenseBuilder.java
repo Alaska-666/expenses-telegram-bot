@@ -1,7 +1,5 @@
 package expense;
 
-import expense.Expense;
-
 import java.util.List;
 
 public class ExpenseBuilder {
@@ -13,7 +11,7 @@ public class ExpenseBuilder {
     public ExpenseBuilder() {}
 
     public Expense getExpense() {
-        return new Expense(name, payer, cost);
+        return new Expense(name, payer, cost, people);
     }
 
     public void setName(String name) {

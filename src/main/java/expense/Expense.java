@@ -1,6 +1,7 @@
 package expense;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Expense {
     private String name;
@@ -13,5 +14,21 @@ public class Expense {
         this.payer = payer;
         this.cost = cost;
         this.whoseExpense = whoseExpense;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPayer() {
+        return payer;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public String getWhoseExpense() {
+        return whoseExpense.stream().sorted().collect(Collectors.joining(","));
     }
 }

@@ -4,6 +4,7 @@ import database.Database;
 import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import utils.Util;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +36,9 @@ public class ReadExpensePeopleState implements State {
                                 .map(this::stringWithoutLastChar)
                                 .collect(Collectors.toList())
                 );
-                return new AddToDatabaseState(expenseBuilder, database);
+                database.addExpense(expenseBuilder.getExpense());
+                Util.setAnswer(sender, Util.getChatID(update), "Трата успешно добавлена!");
+                return null;
             } else if (call_data.equals("СБРОСИТЬ")) {
                 users = database.readUsers();
             } else {

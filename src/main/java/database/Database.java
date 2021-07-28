@@ -1,6 +1,9 @@
 package database;
 
+import expense.Expense;
+
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Database {
@@ -60,6 +63,27 @@ public class Database {
                 + " username text NOT NULL\n"
                 + ");";
         createTable(sql);
+    }
+
+    public void addExpense(Expense expense) {
+        String sql = "INSERT INTO expenses(date, name, cost, payer, people, status) VALUES(?,?,?,?,?,?)";
+        Connection conn = getConn();
+        if (conn == null) {
+            return;
+        }
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, date);
+            pstmt.setString(2, expense.getName());
+            pstmt.setInt(3, expense.getCost());
+            pstmt.setString(4, expense.getPayer());
+            pstmt.setString(5, expense.getWhoseExpense());
+            pstmt.setString(6, "open");
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        closeConnection(conn);
     }
 
     public void createUsersTable() {

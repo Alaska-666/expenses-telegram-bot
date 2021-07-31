@@ -1,6 +1,10 @@
 package database;
 
 import expense.Expense;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -71,7 +75,7 @@ public class Database {
         if (conn == null) {
             return;
         }
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        String date = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, date);
             pstmt.setString(2, expense.getName());
@@ -109,6 +113,30 @@ public class Database {
         closeConnection(conn);
     }
 
+    public void addExpensesToExcelTable(Sheet sheet, CellStyle style, int startRowIndex) {
+        String sql = "SELECT date, name, cost, payer, people, status FROM expenses";
+        Connection conn = getConn();
+        if (conn == null) {
+            return;
+        }
+        try (Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                ResultSetMetaData metadata = rs.getMetaData();
+                int columnCount = metadata.getColumnCount();
+                Row row = sheet.createRow(startRowIndex++);
+                for (int i = 1; i <= columnCount; i++) {
+                    Cell cell = row.createCell(i-1);
+                    cell.setCellValue(rs.getString(i));
+                    cell.setCellStyle(style);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        closeConnection(conn);
+    }
+
     public List<String> readUsers() {
         String sql = "SELECT username FROM users";
         Connection conn = getConn();
@@ -124,6 +152,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        closeConnection(conn);
         return users;
     }
 
@@ -167,6 +196,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        closeConnection(conn);
         return categories;
     }
 }

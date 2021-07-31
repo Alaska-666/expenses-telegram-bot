@@ -1,5 +1,6 @@
 import commands.AddExpenseCategoryCommand;
 import commands.AddExpenseCommand;
+import commands.ShowAllExpensesAsExcelCommand;
 import commands.StartCommand;
 import database.Database;
 import expense.ExpenseBuilder;
@@ -38,6 +39,8 @@ public class Bot extends TelegramLongPollingCommandBot {
         register(new HelpCommand());
         register(new AddExpenseCommand("add_expense", "Добавить трату", states, expenseBuilder, expenseCategories, database));
         register(new AddExpenseCategoryCommand("add_expense_category", "Добавить категорию расходов", states, database, expenseCategories));
+        register(new ShowAllExpensesAsExcelCommand("show_all_expenses_as_excel", "Показать все внесенные траты", database));
+
     }
 
     @Override

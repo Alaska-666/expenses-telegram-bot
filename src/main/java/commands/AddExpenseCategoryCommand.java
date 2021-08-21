@@ -8,19 +8,16 @@ import states.ReadExpenseCategoryState;
 import states.State;
 import utils.Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class AddExpenseCategoryCommand extends ServiceCommand {
+public class AddExpenseCategoryCommand implements Command {
     private final Map<Long, State> states;
     private final Database database;
     private final Map<String, List<String>> expenseCategories;
 
 
-    public AddExpenseCategoryCommand(String identifier, String description, Map<Long, State> states, Database database, Map<String, List<String>> expenseCategories) {
-        super(identifier, description);
+    public AddExpenseCategoryCommand(Map<Long, State> states, Database database, Map<String, List<String>> expenseCategories) {
         this.states = states;
         this.database = database;
         this.expenseCategories = expenseCategories;
@@ -33,15 +30,15 @@ public class AddExpenseCategoryCommand extends ServiceCommand {
                 String.format("%s %s", user.getLastName(), user.getFirstName());
 
         if (strings.length < 1) {
-            sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, "Введите название категории");
+            Util.sendAnswer(absSender, chat.getId(), "Введите название категории");
             states.put(chat.getId(), new ReadExpenseCategoryState(database, expenseCategories));
         } else {
             String category = String.join(" ", strings);
             if (expenseCategories.containsKey(userName) && expenseCategories.get(userName).contains(category)) {
-                sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, "Категория уже существует");
+                Util.sendAnswer(absSender, chat.getId(), "Категория уже существует");
             } else {
                 Util.updateExpenseCategories(expenseCategories, database, category, userName);
-                sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, "Категория добавлена");
+                Util.sendAnswer(absSender, chat.getId(), "Категория добавлена");
             }
         }
     }

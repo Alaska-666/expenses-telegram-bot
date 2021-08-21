@@ -4,6 +4,9 @@ import database.Database;
 import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import utils.Util;
+
+import java.util.List;
 
 public class ReadExpensePayerState implements State {
     private final ExpenseBuilder expenseBuilder;
@@ -23,6 +26,7 @@ public class ReadExpensePayerState implements State {
             payer = update.getMessage().getText();
         }
         expenseBuilder.setPayer(payer);
-        return ReadPeopleStatePreprocessing.execute(update, sender, database, expenseBuilder, database.readUsers(), false);
+        List<String> users = database.readUsers();
+        return ReadPeopleStatePreprocessing.execute(Util.getChatID(update), null, sender, new ReadExpensePeopleState(expenseBuilder, database, users), users);
     }
 }

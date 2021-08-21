@@ -5,8 +5,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import utils.Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +22,10 @@ public class ReadExpenseCategoryState implements State {
         String category = update.getMessage().getText();
         String userName = Util.getUserName(update);
         if (expenseCategories.containsKey(userName) && expenseCategories.get(userName).contains(category)) {
-            Util.setAnswer(sender, update.getMessage().getChatId(), "Категория уже существует");
+            Util.setAnswer(sender, Util.getChatID(update), "Категория уже существует");
         } else {
             Util.updateExpenseCategories(expenseCategories, database, category, userName);
-            Util.setAnswer(sender, update.getMessage().getChatId(), "Категория добавлена");
+            Util.setAnswer(sender, Util.getChatID(update), "Категория добавлена");
         }
         return null;
     }

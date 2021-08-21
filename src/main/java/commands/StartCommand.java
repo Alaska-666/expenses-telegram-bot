@@ -4,12 +4,12 @@ import database.Database;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import utils.Util;
 
-public class StartCommand extends ServiceCommand {
+public class StartCommand implements Command{
     private final Database database;
 
-    public StartCommand(String identifier, String description, Database database) {
-        super(identifier, description);
+    public StartCommand(Database database) {
         this.database = database;
     }
 
@@ -21,6 +21,6 @@ public class StartCommand extends ServiceCommand {
             database.addUser(userName);
         }
         String answer = String.format("Привет, %s! Если Вам нужна помощь, нажмите /help", userName);
-        sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName, answer);
+        Util.sendAnswer(absSender, chat.getId(), answer);
     }
 }

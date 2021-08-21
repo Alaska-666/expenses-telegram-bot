@@ -16,6 +16,12 @@ public class Expense {
         this.whoseExpense = whoseExpense;
     }
 
+    public Expense(String name, String payer, Integer cost) {
+        this.name = name;
+        this.payer = payer;
+        this.cost = cost;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,5 +36,15 @@ public class Expense {
 
     public String getWhoseExpense() {
         return whoseExpense.stream().sorted().collect(Collectors.joining(","));
+    }
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "name='" + name + '\'' +
+                ", payer='" + payer + '\'' +
+                ", cost=" + cost +
+                ", whoseExpense=" + whoseExpense +
+                '}';
     }
 }

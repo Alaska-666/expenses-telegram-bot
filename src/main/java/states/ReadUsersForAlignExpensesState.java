@@ -1,22 +1,19 @@
 package states;
 
 import database.Database;
-import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import utils.Util;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReadExpensePeopleState implements State {
-    private final ExpenseBuilder expenseBuilder;
+public class ReadUsersForAlignExpensesState implements State {
     private final Database database;
     private List<String> users;
     private final String SELECTED_SYMBOL = "✔";
 
-    public ReadExpensePeopleState(ExpenseBuilder expenseBuilder, Database database, List<String> users) {
-        this.expenseBuilder = expenseBuilder;
+    public ReadUsersForAlignExpensesState(Database database, List<String> users) {
         this.database = database;
         this.users = users;
     }
@@ -30,24 +27,20 @@ public class ReadExpensePeopleState implements State {
         if (update.hasCallbackQuery()) {
             String call_data = update.getCallbackQuery().getData();
             if (call_data.equals("ДОБАВИТЬ")) {
-                expenseBuilder.setPeople(
-                        this.users.stream()
-                                .filter(s -> s.endsWith(SELECTED_SYMBOL))
-                                .map(this::stringWithoutLastChar)
-                                .collect(Collectors.toList())
-                );
-                database.addExpense(expenseBuilder.getExpense());
-                Util.setAnswer(sender, Util.getChatID(update), "Трата успешно добавлена!");
-                return null;
+                List<String> selectedUsers = this.users.stream()
+                        .filter(s -> s.endsWith(SELECTED_SYMBOL))
+                        .map(this::stringWithoutLastChar)
+                        .collect(Collectors.toList());
+                return new AlignExpensesState(selectedUsers, database).getNextState(update, sender);
             } else if (call_data.equals("СБРОСИТЬ")) {
                 users = database.readUsers();
             } else {
                 String newUser = call_data.endsWith(SELECTED_SYMBOL) ? stringWithoutLastChar(call_data): call_data.concat(SELECTED_SYMBOL);
                 users.set(users.indexOf(call_data), newUser);
             }
-            return ReadPeopleStatePreprocessing.execute(Util.getChatID(update), update, sender, new ReadExpensePeopleState(expenseBuilder, database, users), users);
+            return ReadPeopleStatePreprocessing.execute(Util.getChatID(update), update, sender, new ReadUsersForAlignExpensesState(database, users), users);
         } else {
-            return ReadPeopleStatePreprocessing.execute(Util.getChatID(update), null, sender, new ReadExpensePeopleState(expenseBuilder, database, users), users);
+            return ReadPeopleStatePreprocessing.execute(Util.getChatID(update), null, sender, new ReadUsersForAlignExpensesState(database, users), users);
         }
     }
 }

@@ -1,7 +1,5 @@
 package states;
 
-import database.Database;
-import expense.ExpenseBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -11,15 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReadPeopleStatePreprocessing {
-    public static ReadExpensePeopleState execute(Update update, AbsSender sender, Database database, ExpenseBuilder expenseBuilder, List<String> users, boolean edit) {
+    public static State execute(Long chatId, Update update, AbsSender sender, State newState, List<String> options) {
         String message = "Выберете, чья это покупка. Внимание, возможен множественный выбор. \n" +
                 "Если хотите завершить выбирать, нажмите \"Добавить\".";
         try {
-            List<String> buttons = new ArrayList<>(users);
+            List<String> buttons = new ArrayList<>(options);
             buttons.add("СБРОСИТЬ");
             buttons.add("ДОБАВИТЬ");
-            Long chatId = Util.getChatID(update);
-            if (edit) {
+            if (update != null) {
                 Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
                 sender.execute(Util.editMessage(chatId, messageId, message, buttons));
             } else {
@@ -28,6 +25,6 @@ public class ReadPeopleStatePreprocessing {
         } catch (TelegramApiException e) {
             System.out.println(e.getMessage());
         }
-        return new ReadExpensePeopleState(expenseBuilder, database, users);
+        return newState;
     }
 }

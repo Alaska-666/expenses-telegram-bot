@@ -1,7 +1,4 @@
-import commands.AddExpenseCategoryCommand;
-import commands.AddExpenseCommand;
-import commands.ShowAllExpensesAsExcelCommand;
-import commands.StartCommand;
+import commands.*;
 import database.Database;
 import expense.ExpenseBuilder;
 import states.State;
@@ -35,12 +32,12 @@ public class Bot extends TelegramLongPollingCommandBot {
         System.out.println(database.readUsers());
 
         //регистрируем команды
-        register(new StartCommand("start", "Старт", database));
+        register(new SafeCommand("start", "Старт", new StartCommand(database)));
         register(new HelpCommand());
-        register(new AddExpenseCommand("add_expense", "Добавить трату", states, expenseBuilder, expenseCategories, database));
-        register(new AddExpenseCategoryCommand("add_expense_category", "Добавить категорию расходов", states, database, expenseCategories));
-        register(new ShowAllExpensesAsExcelCommand("show_all_expenses_as_excel", "Показать все внесенные траты", database));
-
+        register(new SafeCommand("add_expense", "Добавить трату", new AddExpenseCommand(states, expenseBuilder, expenseCategories, database)));
+        register(new SafeCommand("add_expense_category", "Добавить категорию расходов", new AddExpenseCategoryCommand(states, database, expenseCategories)));
+        register(new SafeCommand("show_all_expenses_as_excel", "Показать все внесенные траты", new ShowAllExpensesAsExcelCommand(database)));
+        register(new SafeCommand("align_expenses", "Выровнять расходы", new AlignExpensesCommand(states, database)));
     }
 
     @Override

@@ -13,6 +13,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.*;
 
 public class Util {
+    public static void sendAnswer(AbsSender absSender, Long chatId, String text) {
+        SendMessage message = new SendMessage();
+        // message.enableMarkdownV2(true);
+        message.setChatId(chatId.toString());
+        message.setText(text);
+        try {
+            absSender.execute(message);
+        } catch (TelegramApiException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
     public static void updateExpenseCategories(Map<String, List<String>> expenseCategories, Database database, String category, String userName) {
         database.addExpenseCategory(category, userName);
         if (expenseCategories.containsKey(userName)) {

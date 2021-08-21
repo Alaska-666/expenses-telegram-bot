@@ -137,6 +137,40 @@ public class Database {
         closeConnection(conn);
     }
 
+    public List<Expense> readActualExpensesForPeople(String people) {
+        String sql = String.format("SELECT name, cost, payer FROM expenses WHERE people = '%s' AND status = '%s' ;",
+                people, "open");
+        Connection conn = getConn();
+        if (conn == null) {
+            return Collections.emptyList();
+        }
+        List<Expense> expenses = new ArrayList<>();
+        try (ResultSet rs    = conn.createStatement().executeQuery(sql)){
+            while (rs.next()) {
+                expenses.add(new Expense(rs.getString("name"), rs.getString("payer"), rs.getInt("cost")));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        closeConnection(conn);
+        return expenses;
+    }
+
+    public void closedActualExpensesForPeople(String people) {
+        String sql = String.format("UPDATE expenses SET status = 'closed' WHERE people = '%s' AND status = '%s' ;",
+                people, "open");
+        Connection conn = getConn();
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        closeConnection(conn);
+    }
+
     public List<String> readUsers() {
         String sql = "SELECT username FROM users";
         Connection conn = getConn();

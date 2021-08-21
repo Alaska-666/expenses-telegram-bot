@@ -18,12 +18,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ShowAllExpensesAsExcelCommand extends ServiceCommand {
+public class ShowAllExpensesAsExcelCommand implements Command {
     private final Database database;
     private final String[] HEADERS = {"Дата", "Наименование", "Сумма", "Кто платил", "Чья трата", "Статус"};
 
-    public ShowAllExpensesAsExcelCommand(String identifier, String description, Database database) {
-        super(identifier, description);
+    public ShowAllExpensesAsExcelCommand(Database database) {
         this.database = database;
     }
 
